@@ -11,8 +11,16 @@ RUN yum -y upgrade
 RUN yum install -y git
 
 ## supply credentials
-ARG SSH_KEY_PUB
-RUN mkdir /root/.ssh && echo ${SSH_KEY_PUB} > /root/.ssh/id_rsa.pub
+ARG SSHKEYPUB
+ARG SSHKEYPVT
+RUN mkdir /root/.ssh && \
+    echo "$SSHKEYPUB" > /root/.ssh/id_rsa.pub && \
+    echo "$SSHKEYPVT" > /root/.ssh/id_rsa
+   
+COPY ssh-config /root/.ssh/config
+RUN chmod 600 /root/.ssh/config
+RUN touch /root/.ssh/known_hosts && \
+    ssh-keyscan -t rsa nero.stanford.edu >> ~/.ssh/known_hosts
 
 ## clone cdms repos
 WORKDIR /packages

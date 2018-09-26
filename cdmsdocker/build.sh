@@ -1,6 +1,9 @@
 #!/bin/bash
 
-export SSH_KEY_PUB=$(cat ~/.ssh/id_rsa.pub)
+#export GITKEY=$(cat ~/.ssh/id_rsa)
 
-docker build --build-arg SSH_KEY_PUB="$SSH_KEY_PUB" -t cdms -f Dockerfile .
+docker build \
+    --build-arg SSHKEYPVT="$(cat ~/.ssh/id_rsa)" \
+    --build-arg SSHKEYPUB="$(cat ~/.ssh/id_rsa.pub)" \
+    -t cdms -f Dockerfile .
 
