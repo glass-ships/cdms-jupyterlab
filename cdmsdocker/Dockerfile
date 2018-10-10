@@ -4,7 +4,7 @@
 ##########################################################################################
 
 #### intermediate image 
-FROM centos:7 
+FROM centos:7 as intermediate
 
 ## install git
 RUN yum -y upgrade
@@ -13,31 +13,43 @@ RUN yum install -y git
 ## supply credentials
 ARG SSHKEYPUB
 ARG SSHKEYPVT
+ARG SSHHOSTS
+
 RUN mkdir /root/.ssh && \
     echo "$SSHKEYPUB" > /root/.ssh/id_rsa.pub && \
-    echo "$SSHKEYPVT" > /root/.ssh/id_rsa
-   
+    echo "$SSHKEYPVT" > /root/.ssh/id_rsa && \
+    echo "$SSHHOSTS" > /root/.ssh/known_hosts
+
 COPY ssh-config /root/.ssh/config
-RUN chmod 600 /root/.ssh/config
-RUN touch /root/.ssh/known_hosts && \
-    ssh-keyscan -t rsa nero.stanford.edu >> ~/.ssh/known_hosts
+
+RUN chmod 600 /root/.ssh/config && \
+    chmod 600 /root/.ssh/id_rsa && \
+    chmod 644 /root/.ssh/known_hosts
 
 ## clone cdms repos
 WORKDIR /packages
-RUN git clone --recursive josh@nero:/data/git/Analysis/scdmsPyTools.git && \ 
-    cd scdmsPyTools && git submodule update --init --recursive
+
 RUN git clone josh@nero:/data/git/Analysis/pyCAP.git
+
+RUN git clone josh@nero:/data/git/Analysis/scdmsPyTools.git && \
+    cd scdmsPyTools/scdmsPyTools/BatTools && \
+    rm -rf BatCommon && \
+    git clone josh@nero:/data/git/Reconstruction/BatCommon.git && \
+    cd BatCommon && \
+    rm -rf IOLibrary && \
+    git clone josh@nero:/data/git/DAQ/IOLibrary && \
+    cd ../../.. && \
+    git checkout master && \ 
+    git submodule update --init --recursive
 
 ##########################################################################################
 
 #### build image 
 FROM centos:7
+USER root
 
 ## pull repos from intermediate build
-COPY --from=0 /packages/pyCAP/ /packages/pyCAP 
-COPY --from=0 /packages/scdmsPyTools/packages/scdmsPyTools
-
-USER root
+COPY --from=intermediate /packages/ /packages/ 
 
 ## update base packages, enable epel repo
 RUN  yum install -y epel-release
@@ -57,29 +69,22 @@ RUN  yum install -y nodejs libcurl-devel mysql-devel net-tools sudo centos-relea
      && yum clean all
 
 ## configure python3 & modules (slac-jupyterhub method)
-#RUN  yum -y install centos-release-scl && \
-#     yum-config-manager --enable rhel-server-rhscl-7-rpms && \
-#     yum -y install rh-git29 devtoolset-6 rh-python36-python-tkinter \
-#     rh-python36 rh-python36-python-devel rh-python36-python-setuptools-36 \
-#     rh-python36-PyYAML \
-#     && yum clean all
-#RUN  source scl_source enable rh-python36 && \
-#      pip3  --no-cache-dir  install --upgrade pip setuptools==39.1.0 wheel
-#RUN  source scl_source enable rh-python36 && \
-#      pip3  --no-cache-dir  install --upgrade \
-#        virtualenv virtualenvwrapper ipykernel pipenv numpy scipy pandas matplotlib \
-#        ipywidgets mat4py gsutil scikit-image pygments nbdime\
-#        nbval pypandoc rise bokeh seaborn wordcloud textblob \
-#        nltk kaggle h5py mat4py gsutil zmq humanize tqdm cython \
-#        gputil psutil scikit-image Pillow opencv-python scikit-learn \
-#        tensorflow-gpu tensorboard keras torch torchvision
-RUN cd $HOME/Downloads && \
-    wget --quiet https://repo.anaconda.com/archive/Anaconda3-5.2.0-Linux-x86_64.sh
-    bash Anaconda3-5.2.0-Linux-x86_64.sh -b -p /packages/anaconda3
-    echo "export CONDA_PREFIX=/packages/anaconda3" >> ~/.bashrc
-    echo "export PATH=$CONDA_PREFIX/bin:$PATH" >> ~/.bashrc
-    source $HOME/.bashrc
-RUN conda install boost
+RUN  yum -y install centos-release-scl && \
+     yum-config-manager --enable rhel-server-rhscl-7-rpms && \
+     yum -y install rh-git29 devtoolset-6 rh-python36-python-tkinter \
+     rh-python36 rh-python36-python-devel rh-python36-python-setuptools-36 \
+     rh-python36-PyYAML \
+     && yum clean all
+RUN  source scl_source enable rh-python36 && \
+      pip3  --no-cache-dir  install --upgrade pip setuptools==39.1.0 wheel
+RUN  source scl_source enable rh-python36 && \
+      pip3  --no-cache-dir  install --upgrade \
+        virtualenv virtualenvwrapper ipykernel pipenv numpy scipy pandas matplotlib \
+        ipywidgets mat4py gsutil scikit-image pygments nbdime\
+        nbval pypandoc rise bokeh seaborn wordcloud textblob \
+        nltk kaggle h5py mat4py gsutil zmq humanize tqdm cython \
+        gputil psutil scikit-image Pillow opencv-python scikit-learn \
+        tensorflow-gpu tensorboard keras torch torchvision
 
 ## install cmake 3.12 (required to build ROOT 6)
 RUN sudo yum remove cmake #removes cmake command conflict
@@ -90,14 +95,14 @@ RUN wget --quiet https://cmake.org/files/v3.12/cmake-3.12.0-rc3.tar.gz -O ~/cmak
     rm -r ~/cmake.tar.gz ~/cmake-3.12.0-rc3
 
 ## build boost 1.67 (this version required by scdmsPyTools, not packaged in centos)
-#RUN wget --quiet https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.gz -O ~/boost.tar.gz && \
-#    tar -zxf ~/boost.tar.gz --directory=$HOME && \
-#    cd ~/boost_1_67_0/ && \
-#    ./bootstrap.sh && \
-#    ./b2 install --prefix=/packages/boost1.67
+RUN wget --quiet https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.gz -O ~/boost.tar.gz && \
+    tar -zxf ~/boost.tar.gz --directory=$HOME && \
+    cd ~/boost_1_67_0/ && \
+    ./bootstrap.sh && \
+    ./b2 install --prefix=/packages/boost1.67
+RUN ln -s /packages/boost1.67/lib/libboost_numpy.so /packages/boost1.67/lib/libboost_numpy.so 
 
 ## install ROOT 6.12
-ENV PYTHONDIR=/opt/rh/rh-python36/root/usr/bin
 RUN wget --quiet https://root.cern.ch/download/root_v6.12.06.source.tar.gz -O ~/rootsource.tar.gz && \
     tar -zxf ~/rootsource.tar.gz --directory=$HOME
 RUN source scl_source enable rh-python36 && \
@@ -109,26 +114,35 @@ RUN source scl_source enable rh-python36 && \
     -Dfitsio:BOOL=OFF \
     -Dfftw:BOOL=ON \
     -Dxrootd:BOOL=OFF \
-    -DCMAKE_INSTALL_PREFIX=/packages/root6.12 \
-    -DPYTHON_EXECUTABLE=$PYTHONDIR/python \
-    -DPYTHON_INCLUDE=$PYTHONDIR/include \
+    -DCMAKE_INSTALL_PREFIX:PATH=/packages/root6.12 \
+    -DPYTHON_EXECUTABLE:PATH=/opt/rh/rh-python36/root/usr/bin/python \
+    -DPYTHON_INCLUDE_DIR:PATH=/opt/rh/rh-python36/root/usr/include/python3.6m \
+    -DPYTHON_LIBRARY:PATH=/opt/rh/rh-python36/root/usr/lib64/libpython3.6m.so \
     ..
 RUN source $HOME/root-6.12.06/rootbuild/bin/thisroot.sh && \
     cd $HOME/root-6.12.06/rootbuild && \
     cmake --build . --target install
 RUN rm -r ~/rootsource.tar.gz ~/root-6.12.06
+RUN echo "source /packages/root6.12/bin/thisroot.sh" >> ~/.bashrc
 
 ## install scdmsPyTools
-#ENV BOOST_PATH=/packages/boost1.67
-ENV BOOST_PATH=/packages/anaconda3
 WORKDIR /packages
-RUN source scl_source enable rh-python36 && \
+RUN source /packages/root6.12/bin/thisroot.sh && \
+    source scl_source enable rh-python36 && \ 
+    pip3 --no-cache-dir install root_numpy
+
+RUN export BOOST_PATH=/packages/boost1.67 && \
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/packages/boost1.67/lib && \
+    source /packages/root6.12/bin/thisroot.sh && \
+    source scl_source enable rh-python36 && \
+    source /packages/root6.12/bin/thisroot.sh && \
+    source scl_source enable rh-python36 && \ 
     cd scdmsPyTools/scdmsPyTools/BatTools && \
-    make  && \
-    cd ../.. && \
-    python setup.py install
+    make  
+#    cd ../.. && \
+#    python setup.py install
     
 ## setup pyCAP
-WORKDIR /packages/pyCAP
-RUN source scl_source enable rh-python36 && \
-    python setup.py install
+#WORKDIR /packages/pyCAP
+#RUN source scl_source enable rh-python36 && \
+#    python setup.py install
