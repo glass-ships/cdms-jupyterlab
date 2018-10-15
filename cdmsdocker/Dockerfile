@@ -95,12 +95,16 @@ RUN wget --quiet https://cmake.org/files/v3.12/cmake-3.12.0-rc3.tar.gz -O ~/cmak
     rm -r ~/cmake.tar.gz ~/cmake-3.12.0-rc3
 
 ## build boost 1.67 (this version required by scdmsPyTools, not packaged in centos)
-RUN wget --quiet https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.gz -O ~/boost.tar.gz && \
+RUN ln -s /opt/rh/rh-python36/root/usr/include/python3.6m /opt/rh/rh-python36/root/usr/include/python3.6
+RUN source scl_source enable rh-python36 && \
+    wget --quiet https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.gz -O ~/boost.tar.gz && \
     tar -zxf ~/boost.tar.gz --directory=$HOME && \
     cd ~/boost_1_67_0/ && \
     ./bootstrap.sh && \
-    ./b2 install --prefix=/packages/boost1.67
-RUN ln -s /packages/boost1.67/lib/libboost_numpy.so /packages/boost1.67/lib/libboost_numpy.so 
+#         --with-python-version=3.6 \
+#         --with-python=/opt/rh/rh-python36/root/usr/bin/python \
+#         --with-python-root=/opt/rh/rh-python36/root/usr/lib64/python3.6  && \
+    ./b2 install --prefix=/packages/boost1.67 -j 4
 
 ## install ROOT 6.12
 RUN wget --quiet https://root.cern.ch/download/root_v6.12.06.source.tar.gz -O ~/rootsource.tar.gz && \
@@ -115,18 +119,22 @@ RUN source scl_source enable rh-python36 && \
     -Dfftw:BOOL=ON \
     -Dxrootd:BOOL=OFF \
     -DCMAKE_INSTALL_PREFIX:PATH=/packages/root6.12 \
+    -Dpython3=ON \  
+    -Dpython=ON \
     -DPYTHON_EXECUTABLE:PATH=/opt/rh/rh-python36/root/usr/bin/python \
     -DPYTHON_INCLUDE_DIR:PATH=/opt/rh/rh-python36/root/usr/include/python3.6m \
     -DPYTHON_LIBRARY:PATH=/opt/rh/rh-python36/root/usr/lib64/libpython3.6m.so \
     ..
 RUN source $HOME/root-6.12.06/rootbuild/bin/thisroot.sh && \
     cd $HOME/root-6.12.06/rootbuild && \
-    cmake --build . --target install
+    cmake --build . --target install -- -j4
 RUN rm -r ~/rootsource.tar.gz ~/root-6.12.06
 RUN echo "source /packages/root6.12/bin/thisroot.sh" >> ~/.bashrc
 
 ## install scdmsPyTools
 WORKDIR /packages
+RUN ln -s /packages/boost1.67/lib/libboost_numpy36.so /packages/boost1.67/lib/libboost_numpy.so && \
+    ln -s /packages/boost1.67/lib/libboost_python36.so /packages/boost1.67/lib/libboost_python.so
 RUN source /packages/root6.12/bin/thisroot.sh && \
     source scl_source enable rh-python36 && \ 
     pip3 --no-cache-dir install root_numpy
@@ -134,11 +142,9 @@ RUN source /packages/root6.12/bin/thisroot.sh && \
 RUN export BOOST_PATH=/packages/boost1.67 && \
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/packages/boost1.67/lib && \
     source /packages/root6.12/bin/thisroot.sh && \
-    source scl_source enable rh-python36 && \
-    source /packages/root6.12/bin/thisroot.sh && \
     source scl_source enable rh-python36 && \ 
     cd scdmsPyTools/scdmsPyTools/BatTools && \
-    make  
+    env # make  
 #    cd ../.. && \
 #    python setup.py install
     
@@ -146,3 +152,9 @@ RUN export BOOST_PATH=/packages/boost1.67 && \
 #WORKDIR /packages/pyCAP
 #RUN source scl_source enable rh-python36 && \
 #    python setup.py install
+
+
+## Configure environment
+RUN echo "source scl_source enable rh-python36" >> /root/.bashrc && \ 
+    echo "source /packages/root6.12/bin/thisroot.sh" >> /root/.bashrc
+
