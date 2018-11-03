@@ -1,23 +1,31 @@
-# Glass Ships' Bash Scripts
+# SuperCDMS 
 
-This repository contains sets of potentially useful scripts for various purposes 
+This repository contains various scripts and tools used in my work with the SuperCDMS project.
 
-## cdmsdocker
+## cdms-jupyterlab
 
-Contains a Dockerfile for building a basic SuperCDMS analysis suite, with the intention of being
-web accessible via a jupyter notebook hub. 
+**Dependencies:** Singularity (standard version, not devel)
 
-**Note:** cloning of SCDMS software requires ssh access to the private git repository. 
-As such you will need to pass an accepted ssh key as a build argument for docker:
+A jupyterlab instance tailored to cdms data analysis is currently being developed (release likely by the end of the year).
+Only the [Singularity file](cdms-jupyterlab/Singularityfile.sdef) is required to build the Singularity image.
+To build, simply issue: 
 
-```
-$ docker build \ 
-  --build-arg SSH_KEY_PUB=~/.ssh/id_rsa.pub \
-  -t cdms \
-  -f Dockerfile .
-```
+`$ sudo singularity build /path/to/target.simg /path/to/Singularityfile.sdef`
+
+Users are welcome to tinker with Dockerfile to fit their needs. 
+Note, however, that to build a new Singularity image based on the new Docker image, 
+the Docker image must be available as a Docker hub repository. 
+
+**Notes:**
+
+- Singularity build does require root access
+- Docker build requires Docker CE Edge (multi-stage build)
+- Requires that user has ssh key access to SCDMS git repository
+- Build image by running `$ bash build-container.sh` 
+    - ssh keys are securely managed and do not linger in the final build
+
  
 ## root6-sl7
 
-This directory contains scripts for installing ROOT 6 and its pre-requisites on a clean Scientific Linux 7 system. 
-See [this document](root6-sl7/README.md) for instructions. 
+This directory contains scripts for installing ROOT 6 and its pre-requisites on CentOS/Scientific Linux 7. 
+See [this document](root6-sl7/README.md) for details and instructions. 
