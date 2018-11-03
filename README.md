@@ -12,6 +12,9 @@ To build, simply issue:
 
 `$ sudo singularity build /path/to/target.simg /path/to/Singularityfile.sdef`
 
+Users will be able to access the image via [web browser](https://jupyter.slac.stanford.edu) 
+or submit batch jobs directly to the image by command line.
+
 Users are welcome to tinker with Dockerfile to fit their needs. 
 Note, however, that to build a new Singularity image based on the new Docker image, 
 the Docker image must be available as a Docker hub repository. 
