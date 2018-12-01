@@ -1,10 +1,19 @@
-# SuperCDMS 
+# SuperCDMS Jupyterhub Instance
 
-This repository contains various scripts and tools used in my work with the SuperCDMS project.
+SLAC maintains a number 
 
-## cdms-jupyterlab
+**Dependencies:** 
 
-**Dependencies:** Singularity (standard version, not devel)
+- Singularity (standard version, not devel)
+- Docker CE Edge ([installation guide](https://docs.docker.com/install/linux/docker-ce/ubuntu/))
+
+**Notes:**  
+
+Docker image: 
+- requires root access to build image from Dockerfile
+- ssh access to cdms git repositories
+    - ssh keys are securely managed by the ARG function, and do not linger in the final build
+- 
 
 A jupyterlab instance tailored to cdms data analysis is currently being developed (release likely by the end of the year).
 Only the [Singularity file](cdms-jupyterlab/Singularityfile.sdef) is required to build the Singularity image.
@@ -25,10 +34,4 @@ the Docker image must be available as a Docker hub repository.
 - Docker build requires Docker CE Edge (multi-stage build)
 - Requires that user has ssh key access to SCDMS git repository
 - Build image by running `$ bash build-container.sh` 
-    - ssh keys are securely managed and do not linger in the final build
-
- 
-## root6-sl7
-
-This directory contains scripts for installing ROOT 6 and its pre-requisites on CentOS/Scientific Linux 7. 
-See [this document](root6-sl7/README.md) for details and instructions. 
+- ssh keys are securely managed by the ARG feature, and do not linger in the final build
