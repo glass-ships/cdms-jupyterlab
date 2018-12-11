@@ -54,7 +54,7 @@ COPY --from=intermediate /packages/ /packages/
 
 ## Install dependencies for Boost and ROOT
 RUN sudo yum -y upgrade && \
-    sudo yum install -y nodejs libcurl-devel mysql-devel net-tools sudo centos-release-scl \
+    sudo yum install -y libcurl-devel mysql-devel net-tools sudo centos-release-scl \
      make wget git patch gcc-c++ gcc binutils libX11-devel libXpm-devel libXft-devel \
      libXext-devel gcc-gfortran openssl-devel pcre-devel mesa-libGL-devel \
      mesa-libGLU-devel glew-devel mysql-devel fftw-devel graphviz-devel \
@@ -107,15 +107,21 @@ RUN source $HOME/root-6.12.06/rootbuild/bin/thisroot.sh && \
     cmake --build . --target install -- -j4
 RUN rm -r ~/rootsource.tar.gz ~/root-6.12.06
 
-
-## install scdmsPyTools
-WORKDIR /packages
+## Create softlink for boost shared objects (for compatibility) 
 RUN ln -s /packages/boost1.67/lib/libboost_numpy36.so /packages/boost1.67/lib/libboost_numpy.so && \
     ln -s /packages/boost1.67/lib/libboost_python36.so /packages/boost1.67/lib/libboost_python.so
+
+## Install additional Python modules
 RUN source /packages/root6.12/bin/thisroot.sh && \
     source scl_source enable rh-python36 && \
-    pip3 --no-cache-dir install root_numpy
+    pip3 --no-cache-dir install \
+    root_numpy \
+    uproot \
+    h5py \
+    iminuit
 
+## Install scdmsPyTools    
+WORKDIR /packages
 RUN export BOOST_PATH=/packages/boost1.67 && \
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/packages/boost1.67/lib && \
     source /packages/root6.12/bin/thisroot.sh && \
