@@ -31,6 +31,7 @@ WORKDIR /packages
 
 RUN git clone josh@nero:/data/git/Analysis/pyCAP.git
 
+## Do it this way because asks for password for submodules with --recursive 
 RUN git clone josh@nero:/data/git/Analysis/scdmsPyTools.git && \
     cd scdmsPyTools/scdmsPyTools/BatTools && \
     rm -rf BatCommon && \
@@ -40,7 +41,8 @@ RUN git clone josh@nero:/data/git/Analysis/scdmsPyTools.git && \
     git clone josh@nero:/data/git/DAQ/IOLibrary && \
     cd ../../.. && \
     git checkout master && \
-    git submodule update --init --recursive
+    git submodule update --init --recursive && \ 
+    git clone josh@nero:/data/git/Analysis/tutorials.git
 
 ##########################################################################################
 
@@ -135,3 +137,6 @@ RUN export BOOST_PATH=/packages/boost1.67 && \
 WORKDIR /packages/pyCAP
 RUN source scl_source enable rh-python36 && \
     python setup.py install
+
+## Copy post-hook for moving Tutorials dir 
+COPY ./copy-tutorials.sh /opt/slac/jupyterlab/post-hook.sh

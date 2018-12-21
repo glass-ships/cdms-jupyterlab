@@ -18,25 +18,8 @@ and an example Singularity definition file.
 
 ## Usage
 
-The SuperCDMS image is available to SLAC users via [web browser](https://jupyter.slac.stanford.edu).
-Use your SLAC Unix username and password to log in. 
-
-On the Spawner Options page, choose one of the SuperCDMS Images and click spawn. 
-
-This will open a JupyterLab workspace, including options for a jupyter notebook or terminal window.
-To learn more about JupyterLab and its features, documentation is available: [JupyterLab](https://jupyterlab.readthedocs.io/en/stable/) 
-
-Analysis packages are installed under `/packages`.
-
-
-CDMS data can be found under the mountpoint `/gpfs`:
-
-```
-</temporary/dummy/path>
-```
-
-Example analysis scripts can be found under the pyCAP and scdmsPyTools directories,
-`/packages/pyCAP/examples` and `/packages/scdmsPyTools/demo`.
+For usage instructions 
+Documentation on the official SuperCDMS JupyterLab image is available to SLAC users via [Confluence](insert url).
 
 ### Building the image
 
