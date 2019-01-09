@@ -4,5 +4,4 @@ if [ ! -d "$HOME/notebooks/Tutorials" ]; then
 fi
 cp /packages/pyCAP/examples $HOME/notebooks/Tutorials/pyCAP
 cp /packages/scdmsPyTools/demo $HOME/notebooks/Tutorials/scdmsPyTools
-cp /packages/tutorials $HOME/notebooks/Tutorials/Analysis - Animal data
-
+cp /packages/tutorials $HOME/notebooks/Tutorials/Analysis
