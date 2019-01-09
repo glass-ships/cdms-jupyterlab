@@ -48,7 +48,8 @@ RUN git clone josh@nero:/data/git/Analysis/scdmsPyTools.git && \
 
 #### build image
 
-FROM slaclab/slac-jupyterlab
+#FROM slaclab/slac-jupyterlab
+FROM slaclab/slac-jupyterlab-gpu:20190106.0 
 USER root
 
 ## pull repos from intermediate build
@@ -140,3 +141,5 @@ RUN source scl_source enable rh-python36 && \
 
 ## Copy post-hook for moving Tutorials dir 
 COPY ./copy-tutorials.sh /opt/slac/jupyterlab/post-hook.sh
+
+
