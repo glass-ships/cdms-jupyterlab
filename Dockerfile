@@ -67,7 +67,7 @@ RUN sudo yum -y upgrade && \
      bazel http-parser nodejs perl-Digest-MD5 zlib-devel perl-ExtUtils-MakeMaker gettext \
      libffi-devel pandoc texlive texlive-collection-xetex texlive-ec texlive-upquote \
      texlive-adjustbox emacs bzip2 zip unzip lrzip tree ack screen tmux vim-enhanced emacs-nox \
-     libarchive-devel fuse-sshfs jq \
+     libarchive-devel fuse-sshfs jq graphviz \
      && yum clean all
 
 ## install cmake 3.12 (required to build ROOT 6)
@@ -123,7 +123,11 @@ RUN source /packages/root6.12/bin/thisroot.sh && \
     root_numpy \
     uproot \
     h5py \
-    iminuit
+    iminuit \
+    tensorflow \ 
+    pydot \
+    keras
+     
 
 ## Install scdmsPyTools    
 WORKDIR /packages
@@ -144,4 +148,3 @@ RUN source scl_source enable rh-python36 && \
 ## Copy post-hook for moving Tutorials dir 
 COPY hooks/copy-tutorials.sh /opt/slac/jupyterlab/post-hook.sh
 COPY hooks/launch.bash-with-root /opt/slac/jupyterlab/launch.bash
-
