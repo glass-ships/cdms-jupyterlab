@@ -1,9 +1,10 @@
-##########################################################################################
-# Dockerfile for creation of a SuperCDMS analysis suite image
-# Jupyterhub support incoming
-##########################################################################################
+################################################################################
+####     Dockerfile for creation of SuperCDMS JupyterLab analysis image     ####   
+####     See ./README.md for details                                        ####
+################################################################################
 
 #### intermediate image
+
 FROM centos:7 as intermediate
 
 ## install git
@@ -47,9 +48,8 @@ RUN git clone josh@nero:/data/git/Analysis/tutorials.git
 
 ##########################################################################################
 
-#### build image
+#### final image
 
-#FROM slaclab/slac-jupyterlab
 FROM slaclab/slac-jupyterlab-gpu:20190106.0 
 USER root
 
@@ -126,9 +126,11 @@ RUN source /packages/root6.12/bin/thisroot.sh && \
     iminuit \
     tensorflow \ 
     pydot \
-    keras
+    keras \
+    jupyter \
+    metakernel \
+    zmq
      
-
 ## Install scdmsPyTools    
 WORKDIR /packages
 RUN export BOOST_PATH=/packages/boost1.67 && \
@@ -145,6 +147,18 @@ WORKDIR /packages/pyCAP
 RUN source scl_source enable rh-python36 && \
     python setup.py install
 
-## Copy post-hook for moving Tutorials dir 
+
+#########################
+#### Finalize environment
+
+## Copy hook to create tutorials dir. in user's home
 COPY hooks/copy-tutorials.sh /opt/slac/jupyterlab/post-hook.sh
+
+## Copy update launch.bash to source ROOT in jupyter python notebooks 
 COPY hooks/launch.bash-with-root /opt/slac/jupyterlab/launch.bash
+
+## Copy ROOT kernel for notebook access
+RUN cp -r /packages/root6.12/etc/notebook/kernels /opt/rh/rh-python36/root/usr/share/jupyter/kernels
+
+## [[ T E S T ]] hide python3 kernel (hoping SLAC_Stack will still show)
+RUN mv -f /opt/rh/rh-python36/root/usr/share/jupyter/kernels/python3/kernel.json /opt/rh/rh-python36/root/usr/share/jupyter/kernels/python3/python3kern
