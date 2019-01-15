@@ -158,7 +158,7 @@ COPY hooks/copy-tutorials.sh /opt/slac/jupyterlab/post-hook.sh
 COPY hooks/launch.bash-with-root /opt/slac/jupyterlab/launch.bash
 
 ## Copy ROOT kernel for notebook access
-RUN cp -r /packages/root6.12/etc/notebook/kernels /opt/rh/rh-python36/root/usr/share/jupyter/kernels
+RUN cp -r /packages/root6.12/etc/notebook/kernels/root /opt/rh/rh-python36/root/usr/share/jupyter/kernels
 
 ## [[ T E S T ]] hide python3 kernel (hoping SLAC_Stack will still show)
-RUN mv -f /opt/rh/rh-python36/root/usr/share/jupyter/kernels/python3/kernel.json /opt/rh/rh-python36/root/usr/share/jupyter/kernels/python3/python3kern
+RUN rm -rf /opt/rh/rh-python36/root/usr/share/jupyter/kernels/python3/
