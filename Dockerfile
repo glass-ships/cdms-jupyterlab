@@ -129,7 +129,8 @@ RUN source /packages/root6.12/bin/thisroot.sh && \
     keras \
     jupyter \
     metakernel \
-    zmq
+    zmq \
+    dask[complete]
      
 ## Install scdmsPyTools    
 WORKDIR /packages
