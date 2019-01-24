@@ -8,8 +8,8 @@
 FROM centos:7 as intermediate
 
 ## install git
-RUN yum -y upgrade
-RUN yum install -y git
+RUN sudo yum -y upgrade
+RUN sudo yum install -y git
 
 ## supply credentials
 ARG SSHKEYPUB
@@ -23,9 +23,9 @@ RUN mkdir /root/.ssh && \
 
 COPY ssh-config /root/.ssh/config
 
-RUN chmod 600 /root/.ssh/config && \
-    chmod 600 /root/.ssh/id_rsa && \
-    chmod 644 /root/.ssh/known_hosts
+RUN sudo chmod 600 /root/.ssh/config && \
+    sudo chmod 600 /root/.ssh/id_rsa && \
+    sudo chmod 644 /root/.ssh/known_hosts
 
 ## clone cdms repos
 WORKDIR /packages
@@ -68,10 +68,10 @@ RUN sudo yum -y upgrade && \
      libffi-devel pandoc texlive texlive-collection-xetex texlive-ec texlive-upquote \
      texlive-adjustbox emacs bzip2 zip unzip lrzip tree ack screen tmux vim-enhanced emacs-nox \
      libarchive-devel fuse-sshfs jq graphviz \
-     && yum clean all
+     && sudo yum clean all
 
 ## install cmake 3.12 (required to build ROOT 6)
-RUN sudo yum remove cmake #removes cmake command conflict
+RUN sudo yum remove cmake # removes cmake command conflict
 RUN wget --quiet https://cmake.org/files/v3.12/cmake-3.12.0-rc3.tar.gz -O /tmp/cmake.tar.gz && \
     tar -zxf /tmp/cmake.tar.gz --directory=/tmp  && cd /tmp/cmake-3.12.0-rc3/ && \
     ./bootstrap && \
@@ -159,4 +159,7 @@ COPY hooks/copy-tutorials.sh /opt/slac/jupyterlab/post-hook.sh
 COPY hooks/launch.bash-with-root /opt/slac/jupyterlab/launch.bash
 
 ## Rename SLAC_Stack to 'Python 3 (with ROOT)'
-COPY kernels/rename-slac-stack /usr/local/share/jupyter/kernels/slac_stack/kernel.json
+COPY kernels/rename-slac-stack /usr/local/share/jupyter/kernels/slac_stack/kernel.json 
+
+RUN echo 'set term=builtin_ansi' >> /etc/vimrc
+#COPY scripts/vimrc /etc/vimrc
