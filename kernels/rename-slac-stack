@@ -1,5 +1,5 @@
 {
- "display_name": "Python 3 (with ROOT)",
+ "display_name": "py3-w-ROOT",
  "language": "python",
  "argv": [
     "/opt/slac/jupyterlab/launch.bash",

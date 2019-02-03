@@ -6,9 +6,11 @@
 #### intermediate image
 
 FROM centos:7 as intermediate
+USER root
 
 ## install git
-RUN sudo yum -y upgrade
+RUN yum -y upgrade
+RUN yum -y install sudo
 RUN sudo yum install -y git
 
 ## supply credentials
@@ -43,7 +45,6 @@ RUN git clone josh@nero:/data/git/Analysis/scdmsPyTools.git && \
     git checkout master && \
     git submodule update --init --recursive 
 
-WORKDIR /
 RUN git clone josh@nero:/data/git/Analysis/tutorials.git
 
 ##########################################################################################
@@ -55,7 +56,6 @@ USER root
 
 ## pull repos from intermediate build
 COPY --from=intermediate /packages/ /packages/
-COPY --from=intermediate /tutorials /packages/tutorials
 
 ## Install dependencies for Boost and ROOT
 RUN sudo yum -y upgrade && \
@@ -80,7 +80,7 @@ RUN wget --quiet https://cmake.org/files/v3.12/cmake-3.12.0-rc3.tar.gz -O /tmp/c
     #echo "alias cmake12='/packages/cmake-3.12.0-rc3/cmake '$@''" >> /root/.bashrc
 
 ## build boost 1.67 (this version required by scdmsPyTools, not packaged in centos)
-RUN ln -s /opt/rh/rh-python36/root/usr/include/python3.6m /opt/rh/rh-python36/root/usr/include/python3.6
+RUN sudo ln -s /opt/rh/rh-python36/root/usr/include/python3.6m /opt/rh/rh-python36/root/usr/include/python3.6
 RUN source scl_source enable rh-python36 && \
     wget --quiet https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.gz -O ~/boost.tar.gz && \
     tar -zxf ~/boost.tar.gz --directory=$HOME && \
@@ -162,4 +162,3 @@ COPY hooks/launch.bash-with-root /opt/slac/jupyterlab/launch.bash
 COPY kernels/rename-slac-stack /usr/local/share/jupyter/kernels/slac_stack/kernel.json 
 
 RUN echo 'set term=builtin_ansi' >> /etc/vimrc
-#COPY scripts/vimrc /etc/vimrc
