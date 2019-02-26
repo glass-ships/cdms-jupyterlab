@@ -3,7 +3,8 @@
 ## Overview
 
 SLAC maintains a number of JupyterLab images for various research projects.
-This repository contains the code used to build the SuperCDMS Docker image. 
+This repository contains the code used to build the SuperCDMS Docker beta image, intended for testing new features.
+For Release Notes, see the master branch README. 
 
 **Dependencies:** 
 - Docker CE Edge ([installation guide](https://docs.docker.com/install/linux/docker-ce/ubuntu/))
