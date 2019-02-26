@@ -23,7 +23,7 @@ RUN mkdir /root/.ssh && \
 	echo "$SSHKEYPVT" > /root/.ssh/id_rsa && \
 	echo "$SSHHOSTS" > /root/.ssh/known_hosts
 
-COPY ssh-config /root/.ssh/config
+COPY scripts/ssh-config /root/.ssh/config
 
 RUN sudo chmod 600 /root/.ssh/config && \
 	sudo chmod 600 /root/.ssh/id_rsa && \
@@ -41,9 +41,11 @@ RUN git clone josh@nero:/data/git/Analysis/scdmsPyTools.git && \
 	git clone josh@nero:/data/git/DAQ/IOLibrary && \
 	cd ../../.. && \
 	git checkout master && \
-	git submodule update --init --recursive && \ 
-	cd /packages && \ 
+	git submodule update --init --recursive 
+RUN cd /packages && \ 
 	git clone josh@nero:/data/git/Analysis/pyCAP.git && \
+	cd pyCAP && git checkout develop && git pull && \
+	cd .. && \
 	git clone josh@nero:/data/git/Analysis/tutorials.git && \
 	git clone josh@nero:/data/git/Analysis/python_colorschemes.git && \ 
 	git clone josh@nero:/data/git/TF_Analysis/Northwestern/analysis_tools.git
@@ -69,6 +71,7 @@ RUN sudo yum -y upgrade && \
 	libffi-devel pandoc texlive texlive-collection-xetex texlive-ec texlive-upquote \
 	texlive-adjustbox emacs bzip2 zip unzip lrzip tree ack screen tmux vim-enhanced emacs-nox \
 	libarchive-devel fuse-sshfs jq graphviz \
+	dvipng \ 
 	&& sudo yum clean all
 
 ## install cmake 3.12 (required to build ROOT 6)
@@ -131,9 +134,8 @@ RUN source /packages/root6.12/bin/thisroot.sh && \
 	jupyter \
 	metakernel \
 	zmq \
-	dask[complete]
-	xlrd xlwt openpyxl \
-        dvipng
+	dask[complete] \
+	xlrd xlwt openpyxl 
      
 ### Install cdms python packages
 #
