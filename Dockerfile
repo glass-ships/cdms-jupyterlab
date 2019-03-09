@@ -17,13 +17,12 @@ RUN sudo yum install -y git
 ARG SSHKEYPUB
 ARG SSHKEYPVT
 ARG SSHHOSTS
-
+ARG SSHCONFIG
 RUN mkdir /root/.ssh && \
 	echo "$SSHKEYPUB" > /root/.ssh/id_rsa.pub && \
 	echo "$SSHKEYPVT" > /root/.ssh/id_rsa && \
 	echo "$SSHHOSTS" > /root/.ssh/known_hosts
-
-COPY scripts/ssh-config /root/.ssh/config
+	echo "$SSHCONFIG" > /root/.ssh/config
 
 RUN sudo chmod 600 /root/.ssh/config && \
 	sudo chmod 600 /root/.ssh/id_rsa && \
