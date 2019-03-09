@@ -18,6 +18,7 @@ ARG SSHKEYPUB
 ARG SSHKEYPVT
 ARG SSHHOSTS
 ARG SSHCONFIG
+
 RUN mkdir /root/.ssh && \
 	echo "$SSHKEYPUB" > /root/.ssh/id_rsa.pub && \
 	echo "$SSHKEYPVT" > /root/.ssh/id_rsa && \
@@ -64,11 +65,16 @@ RUN sudo yum -y upgrade && \
 	sudo yum install -y libcurl-devel mysql-devel net-tools sudo centos-release-scl \
 	make wget git patch gcc-c++ gcc binutils libX11-devel libXpm-devel libXft-devel \
 	libXext-devel gcc-gfortran openssl-devel pcre-devel mesa-libGL-devel \
-	mesa-libGLU-devel glew-devel mysql-devel fftw-devel graphviz-devel \
-	avahi-compat-libdns_sd-devel python-devel libxml2-devel gls-devel blas-devel \
+	mesa-libGLU-devel glew-devel mysql-devel graphviz-devel \
+	avahi-compat-libdns_sd-devel python-devel libxml2-devel gls-devel  \
 	bazel http-parser nodejs perl-Digest-MD5 zlib-devel perl-ExtUtils-MakeMaker gettext \
-	libffi-devel pandoc texlive texlive-collection-xetex texlive-ec texlive-upquote \
-	texlive-adjustbox emacs bzip2 zip unzip lrzip tree ack screen tmux vim-enhanced emacs-nox \
+	libffi-devel \
+	pandoc texlive texlive-collection-xetex texlive-ec texlive-upquote texlive-adjustbox \ # LaTeX tools
+	blas-devel fftw-devel \ # math libraries
+	hdf5-devel \ # data formats
+	bzip2 unzip lrzip zip \ # compression tools
+	tree ack screen tmux \
+	vim-enhanced emacs emacs-nox \ # text editors
 	libarchive-devel fuse-sshfs jq graphviz \
 	dvipng \ 
 	&& sudo yum clean all
@@ -118,14 +124,16 @@ RUN rm -r ~/rootsource.tar.gz ~/root-6.12.06
 RUN ln -s /packages/boost1.67/lib/libboost_numpy36.so /packages/boost1.67/lib/libboost_numpy.so && \
 	ln -s /packages/boost1.67/lib/libboost_python36.so /packages/boost1.67/lib/libboost_python.so
 
-## Install additional Python modules
+## Install additional system packages
+
+## Install additional Python packages
 RUN source /packages/root6.12/bin/thisroot.sh && \
 	source scl_source enable rh-python36 && \
 	pip install --upgrade pip && \
 	pip --no-cache-dir install \
 	root_numpy \
 	uproot \
-	h5py \
+	h5py tables \
 	iminuit \
 	tensorflow \ 
 	pydot \
