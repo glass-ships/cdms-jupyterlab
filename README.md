@@ -22,3 +22,7 @@ If you're interested in building your own Docker image for local use:
 
 - You'll need to change every instance of `josh@nero` in `./Dockerfile` to reflect your SLAC username
 - 
+
+## Contribution 
+
+If you'd like to help develop the official SuperCDMS JupyterLab image, contac blaha blah blah
