@@ -60,24 +60,14 @@ USER root
 ## pull repos from intermediate build
 COPY --from=intermediate /packages/ /packages/
 
+### ROOT and Boost ###
 ## Install dependencies for Boost and ROOT
 RUN sudo yum -y upgrade && \
-	sudo yum install -y libcurl-devel mysql-devel net-tools sudo centos-release-scl \
-	make wget git patch gcc-c++ gcc binutils libX11-devel libXpm-devel libXft-devel \
-	libXext-devel gcc-gfortran openssl-devel pcre-devel mesa-libGL-devel \
-	mesa-libGLU-devel glew-devel mysql-devel graphviz-devel \
-	avahi-compat-libdns_sd-devel python-devel libxml2-devel gls-devel  \
-	bazel http-parser nodejs perl-Digest-MD5 zlib-devel perl-ExtUtils-MakeMaker gettext \
-	libffi-devel \
-	pandoc texlive texlive-collection-xetex texlive-ec texlive-upquote texlive-adjustbox \ # LaTeX tools
-	blas-devel fftw-devel \ # math libraries
-	hdf5-devel \ # data formats
-	bzip2 unzip lrzip zip \ # compression tools
-	tree ack screen tmux \
-	vim-enhanced emacs emacs-nox \ # text editors
-	libarchive-devel fuse-sshfs jq graphviz \
-	dvipng \ 
-	&& sudo yum clean all
+	sudo yum install -y gcc-gfortran openssl-devel pcre-devel \
+	mesa-libGL-devel mesa-libGLU-devel glew-devel ftgl-devel mysql-devel
+	fftw-devel cfitsio-devel graphviz-devel \
+	avahi-compat-libdns_sd-devel libldap-dev python-devel \
+	libxml2-devel gsl-static
 
 ## install cmake 3.12 (required to build ROOT 6)
 RUN sudo yum remove cmake # removes cmake command conflict
@@ -124,15 +114,27 @@ RUN rm -r ~/rootsource.tar.gz ~/root-6.12.06
 RUN ln -s /packages/boost1.67/lib/libboost_numpy36.so /packages/boost1.67/lib/libboost_numpy.so && \
 	ln -s /packages/boost1.67/lib/libboost_python36.so /packages/boost1.67/lib/libboost_python.so
 
+### ###
 ## Install additional system packages
-
+RUN sudo yum install -y libcurl-devel net-tools centos-release-scl \
+	make wget git patch gcc-c++ gcc binutils libX11-devel libXpm-devel libXft-devel \
+	libXext-devel bazel http-parser nodejs perl-Digest-MD5 perl-ExtUtils-MakeMaker gettext \
+	pandoc texlive texlive-collection-xetex texlive-ec texlive-upquote texlive-adjustbox \ # LaTeX tools
+	blas-devel \ # math libraries
+	hdf5-devel \ # data formats
+	bzip2 unzip lrzip zip zlib-devel \ # compression tools
+	tree ack screen tmux \  # terminal utilities
+	vim-enhanced neovim emacs emacs-nox \ # text editors
+	libarchive-devel fuse-sshfs jq graphviz dvipng \
+	&& sudo yum clean all
+	
 ## Install additional Python packages
 RUN source /packages/root6.12/bin/thisroot.sh && \
 	source scl_source enable rh-python36 && \
 	pip install --upgrade pip && \
 	pip --no-cache-dir install \
-	root_numpy \
-	uproot \
+	pydoc \ # utility modules
+	root_numpy uproot \ # ROOT modules
 	h5py tables \
 	iminuit \
 	tensorflow \ 
@@ -144,8 +146,7 @@ RUN source /packages/root6.12/bin/thisroot.sh && \
 	dask[complete] \
 	xlrd xlwt openpyxl 
      
-### Install cdms python packages
-#
+### CDMS packages ###
 ## Install scdmsPyTools    
 WORKDIR /packages
 RUN export BOOST_PATH=/packages/boost1.67 && \
@@ -169,8 +170,7 @@ WORKDIR /packages/python_colorschemes
 RUN source scl_source enable rh-python36 && \
 	python setup.py install
 
-### Finalize environment
-#
+### Finalize environment ###
 ## Copy hook to create/manage tutorials directory in user's home
 COPY hooks/copy-tutorials.sh /opt/slac/jupyterlab/post-hook.sh
 
