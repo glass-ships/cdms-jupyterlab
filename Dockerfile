@@ -22,7 +22,7 @@ ARG SSHCONFIG
 RUN mkdir /root/.ssh && \
 	echo "$SSHKEYPUB" > /root/.ssh/id_rsa.pub && \
 	echo "$SSHKEYPVT" > /root/.ssh/id_rsa && \
-	echo "$SSHHOSTS" > /root/.ssh/known_hosts
+	echo "$SSHHOSTS" > /root/.ssh/known_hosts && \
 	echo "$SSHCONFIG" > /root/.ssh/config
 
 RUN sudo chmod 600 /root/.ssh/config && \
