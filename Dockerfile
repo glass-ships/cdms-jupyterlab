@@ -64,7 +64,7 @@ COPY --from=intermediate /packages/ /packages/
 ## Install dependencies for Boost and ROOT
 RUN sudo yum -y upgrade && \
 	sudo yum install -y gcc-gfortran openssl-devel pcre-devel \
-	mesa-libGL-devel mesa-libGLU-devel glew-devel ftgl-devel mysql-devel
+	mesa-libGL-devel mesa-libGLU-devel glew-devel ftgl-devel mysql-devel \
 	fftw-devel cfitsio-devel graphviz-devel \
 	avahi-compat-libdns_sd-devel libldap-dev python-devel \
 	libxml2-devel gsl-static
@@ -116,16 +116,23 @@ RUN ln -s /packages/boost1.67/lib/libboost_numpy36.so /packages/boost1.67/lib/li
 
 ### ###
 ## Install additional system packages
-RUN sudo yum install -y libcurl-devel net-tools centos-release-scl \
-	make wget git patch gcc-c++ gcc binutils libX11-devel libXpm-devel libXft-devel \
+RUN sudo yum install -y \
+	centos-release-scl make wget git patch net-tools binutils \
+	gcc-c++ gcc libcurl-devel libX11-devel libXpm-devel libXft-devel \
+	blas-devel libarchive-devel fuse-sshfs jq graphviz dvipng \
 	libXext-devel bazel http-parser nodejs perl-Digest-MD5 perl-ExtUtils-MakeMaker gettext \
-	pandoc texlive texlive-collection-xetex texlive-ec texlive-upquote texlive-adjustbox \ # LaTeX tools
-	blas-devel \ # math libraries
-	hdf5-devel \ # data formats
-	bzip2 unzip lrzip zip zlib-devel \ # compression tools
-	tree ack screen tmux \  # terminal utilities
-	vim-enhanced neovim emacs emacs-nox \ # text editors
-	libarchive-devel fuse-sshfs jq graphviz dvipng \
+	
+	# LaTeX tools
+	pandoc texlive texlive-collection-xetex texlive-ec texlive-upquote texlive-adjustbox \ 
+	
+	# Data formats
+	hdf5-devel \ 
+	
+	# Compression tools
+	bzip2 unzip lrzip zip zlib-devel \ 
+	
+	# Terminal utilities
+	tree ack screen tmux vim-enhanced neovim emacs emacs-nox \  
 	&& sudo yum clean all
 	
 ## Install additional Python packages
@@ -133,18 +140,14 @@ RUN source /packages/root6.12/bin/thisroot.sh && \
 	source scl_source enable rh-python36 && \
 	pip install --upgrade pip && \
 	pip --no-cache-dir install \
-	pydoc \ # utility modules
-	root_numpy uproot \ # ROOT modules
-	h5py tables \
-	iminuit \
-	tensorflow \ 
-	pydot \
-	keras \
-	jupyter \
-	metakernel \
-	zmq \
-	dask[complete] \
-	xlrd xlwt openpyxl 
+		jupyter jupyterlab metakernel \
+		# ROOT modules
+		root_numpy uproot \
+		h5py tables \
+		iminuit tensorflow pydot keras \
+		zmq \
+		dask[complete] \
+		xlrd xlwt openpyxl 
      
 ### CDMS packages ###
 ## Install scdmsPyTools    
