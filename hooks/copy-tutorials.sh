@@ -6,6 +6,8 @@ elif [ -d "$HOME/notebooks/Tutorials" ]; then
   rm -rf $HOME/notebooks/Tutorials/*
 fi
 
+chmod -R 555 $HOME/notebooks/Tutorials 
+
 mkdir $HOME/notebooks/Tutorials/pyCAP && cp -r /packages/pyCAP/examples/* $HOME/notebooks/Tutorials/pyCAP
 mkdir $HOME/notebooks/Tutorials/scdmsPyTools && cp -r /packages/scdmsPyTools/demo/* $HOME/notebooks/Tutorials/scdmsPyTools
 mkdir $HOME/notebooks/Tutorials/Analysis && cp -r /packages/tutorials/* $HOME/notebooks/Tutorials/Analysis
