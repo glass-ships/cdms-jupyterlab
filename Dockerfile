@@ -17,13 +17,13 @@ RUN sudo yum install -y git
 ARG SSHKEYPUB
 ARG SSHKEYPVT
 ARG SSHHOSTS
+ARG SSHCONFIG
 
 RUN mkdir /root/.ssh && \
 	echo "$SSHKEYPUB" > /root/.ssh/id_rsa.pub && \
 	echo "$SSHKEYPVT" > /root/.ssh/id_rsa && \
-	echo "$SSHHOSTS" > /root/.ssh/known_hosts
-
-COPY scripts/ssh-config /root/.ssh/config
+	echo "$SSHHOSTS" > /root/.ssh/known_hosts && \
+	echo "$SSHCONFIG" > /root/.ssh/config
 
 RUN sudo chmod 600 /root/.ssh/config && \
 	sudo chmod 600 /root/.ssh/id_rsa && \
@@ -60,19 +60,14 @@ USER root
 ## pull repos from intermediate build
 COPY --from=intermediate /packages/ /packages/
 
+### ROOT and Boost ###
 ## Install dependencies for Boost and ROOT
 RUN sudo yum -y upgrade && \
-	sudo yum install -y libcurl-devel mysql-devel net-tools sudo centos-release-scl \
-	make wget git patch gcc-c++ gcc binutils libX11-devel libXpm-devel libXft-devel \
-	libXext-devel gcc-gfortran openssl-devel pcre-devel mesa-libGL-devel \
-	mesa-libGLU-devel glew-devel mysql-devel fftw-devel graphviz-devel \
-	avahi-compat-libdns_sd-devel python-devel libxml2-devel gls-devel blas-devel \
-	bazel http-parser nodejs perl-Digest-MD5 zlib-devel perl-ExtUtils-MakeMaker gettext \
-	libffi-devel pandoc texlive texlive-collection-xetex texlive-ec texlive-upquote \
-	texlive-adjustbox emacs bzip2 zip unzip lrzip tree ack screen tmux vim-enhanced emacs-nox \
-	libarchive-devel fuse-sshfs jq graphviz \
-	dvipng \ 
-	&& sudo yum clean all
+	sudo yum install -y gcc-gfortran openssl-devel pcre-devel \
+	mesa-libGL-devel mesa-libGLU-devel glew-devel ftgl-devel mysql-devel \
+	fftw-devel cfitsio-devel graphviz-devel \
+	avahi-compat-libdns_sd-devel libldap-dev python-devel \
+	libxml2-devel gsl-static
 
 ## install cmake 3.12 (required to build ROOT 6)
 RUN sudo yum remove cmake # removes cmake command conflict
@@ -119,26 +114,42 @@ RUN rm -r ~/rootsource.tar.gz ~/root-6.12.06
 RUN ln -s /packages/boost1.67/lib/libboost_numpy36.so /packages/boost1.67/lib/libboost_numpy.so && \
 	ln -s /packages/boost1.67/lib/libboost_python36.so /packages/boost1.67/lib/libboost_python.so
 
-## Install additional Python modules
+### ###
+## Install additional system packages
+RUN sudo yum install -y \
+	centos-release-scl make wget git patch net-tools binutils \
+	gcc-c++ gcc libcurl-devel libX11-devel libXpm-devel libXft-devel \
+	blas-devel libarchive-devel fuse-sshfs jq graphviz dvipng \
+	libXext-devel bazel http-parser nodejs perl-Digest-MD5 perl-ExtUtils-MakeMaker gettext \
+	
+	# LaTeX tools
+	pandoc texlive texlive-collection-xetex texlive-ec texlive-upquote texlive-adjustbox \ 
+	
+	# Data formats
+	hdf5-devel \ 
+	
+	# Compression tools
+	bzip2 unzip lrzip zip zlib-devel \ 
+	
+	# Terminal utilities
+	tree ack screen tmux vim-enhanced neovim emacs emacs-nox \  
+	&& sudo yum clean all
+	
+## Install additional Python packages
 RUN source /packages/root6.12/bin/thisroot.sh && \
 	source scl_source enable rh-python36 && \
 	pip install --upgrade pip && \
 	pip --no-cache-dir install \
-	root_numpy \
-	uproot \
-	h5py \
-	iminuit \
-	tensorflow \ 
-	pydot \
-	keras \
-	jupyter \
-	metakernel \
-	zmq \
-	dask[complete] \
-	xlrd xlwt openpyxl 
+		jupyter jupyterlab metakernel \
+		# ROOT modules
+		root_numpy uproot \
+		h5py tables \
+		iminuit tensorflow pydot keras \
+		zmq \
+		dask[complete] \
+		xlrd xlwt openpyxl 
      
-### Install cdms python packages
-#
+### CDMS packages ###
 ## Install scdmsPyTools    
 WORKDIR /packages
 RUN export BOOST_PATH=/packages/boost1.67 && \
@@ -162,8 +173,7 @@ WORKDIR /packages/python_colorschemes
 RUN source scl_source enable rh-python36 && \
 	python setup.py install
 
-### Finalize environment
-#
+### Finalize environment ###
 ## Copy hook to create/manage tutorials directory in user's home
 COPY hooks/copy-tutorials.sh /opt/slac/jupyterlab/post-hook.sh
 

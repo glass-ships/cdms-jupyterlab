@@ -10,7 +10,7 @@ For Release Notes, see the master branch README.
 - Docker CE Edge ([installation guide](https://docs.docker.com/install/linux/docker-ce/ubuntu/))
 
 **Notes:**  
-- Requires sudo to build image from Dockerfile
+- Docker requires sudo acces, or that the user be added to the `Docker` group 
 - ssh access to CDMS git repositories
     - ssh keys are securely managed by the ARG function, and do not linger in the final build
 
@@ -20,4 +20,9 @@ Documentation on the official SuperCDMS JupyterLab image is available to SLAC us
 
 If you're interested in building your own Docker image for local use: 
 
-[[ i n c o m p l e t e ]]
+- You'll need to change every instance of `josh@nero` in `./Dockerfile` to reflect your SLAC username
+- 
+
+## Contribution 
+
+If you'd like to help develop the official SuperCDMS JupyterLab image, contac blaha blah blah
