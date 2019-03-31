@@ -23,7 +23,7 @@ If you're interested in building your own Docker image for local use:
 - You'll need to change every instance of `josh@nero` in `./Dockerfile` to reflect your SLAC username
 - JupyterLab is installed via pip, so you'll want to add a `RUN` statement at the end of `./Dockerfile` that launches JupyterLab when the container starts up
 - `./build.sh` provides an example script that you'll likely want to tailor to fit your needs.
-- the build script requires a tag argument, and can be run with the following syntax: 
+- the build script requires a tag argument, and can be run with the following syntax:  
     ``../cdms-jupyterlab $ bash build.sh '<dockerhub user>/<repository>:<tag>``
 
 ## Contribution 
