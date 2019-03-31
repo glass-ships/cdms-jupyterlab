@@ -22,6 +22,8 @@ git clone josh@nero:/data/git/Analysis/python_colorschemes.git
 
 git clone josh@nero:/data/git/TF_Analysis/Northwestern/analysis_tools.git
 
+## Build Docker image
+
 docker build \
     -t "$2" # detlab/cdms-jupyterlab:0.1.0 \
     --rm \
