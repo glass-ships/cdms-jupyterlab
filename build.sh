@@ -2,6 +2,8 @@
 
 ## Clone CDMS repositories locally
 
+mkdir cdms_repos
+cd cdms_repos
 git clone josh@nero:/data/git/Analysis/scdmsPyTools.git
 cd scdmsPyTools/scdmsPyTools/BatTools
 rm -rf BatCommon
@@ -25,6 +27,5 @@ git clone josh@nero:/data/git/TF_Analysis/Northwestern/analysis_tools.git
 ## Build Docker image
 
 docker build \
-    -t "$2" # detlab/cdms-jupyterlab:0.1.0 \
     --rm \
     -f Dockerfile .
