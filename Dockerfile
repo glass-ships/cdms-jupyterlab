@@ -94,11 +94,11 @@ RUN source /packages/root6.12/bin/thisroot.sh && \
 ### CDMS packages ###
 
 ## Import CDMS packages
-COPY ./cdms_repos/pyCAP /packages/pyCAP
-COPY ./cdms_repos/scdmsPyTools /packages/scdmsPyTools
-COPY ./cdms_repos/tutorials /packages/tutorials
-COPY ./cdms_repos/python_colorschemes /packages/python_colorschemes
-COPY ./cdms_repos/analysis_tools.git /packages/analysis_tools
+COPY cdms_repos/pyCAP /packages/pyCAP
+COPY cdms_repos/scdmsPyTools /packages/scdmsPyTools
+COPY cdms_repos/tutorials /packages/tutorials
+COPY cdms_repos/python_colorschemes /packages/python_colorschemes
+COPY cdms_repos/analysis_tools /packages/analysis_tools
 
 
 ## Install scdmsPyTools    

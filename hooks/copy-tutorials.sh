@@ -14,8 +14,6 @@ mkdir $HOME/notebooks/Tutorials/Analysis && cp -r /packages/tutorials/* $HOME/no
 mkdir $HOME/notebooks/Tutorials/Introduction  && \
 mv -f $HOME/notebooks/Tutorials/Analysis/JupyterDemo-Jan01.ipynb $HOME/notebooks/Tutorials/Introduction/Intro_to_JupyterLab.ipynb
 
-chmod -R 755 $HOME/notebooks/Tutorials 
-
 #pending tutorials repo structure change
 #mkdir $HOME/notebooks/Tutorials/Basic && cp -r /packages/tutorials/Basic $HOME/notebooks/Tutorials/Basic
 #mkdir $HOME/notebooks/Tutorials/Analysis && cp -r /packages/tutorials/Analysis $HOME/notebooks/Tutorials/Analysis
