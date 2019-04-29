@@ -6,16 +6,20 @@ elif [ -d "$HOME/notebooks/Tutorials" ]; then
   rm -rf $HOME/notebooks/Tutorials/*
 fi
 
-chmod -R 755 $HOME/notebooks/Tutorials 
+chmod -R 755 $HOME/notebooks/Tutorials
 
-mkdir $HOME/notebooks/Tutorials/pyCAP && cp -r /packages/pyCAP/examples/* $HOME/notebooks/Tutorials/pyCAP
-mkdir $HOME/notebooks/Tutorials/scdmsPyTools && cp -r /packages/scdmsPyTools/demo/* $HOME/notebooks/Tutorials/scdmsPyTools
-mkdir $HOME/notebooks/Tutorials/Analysis && cp -r /packages/tutorials/* $HOME/notebooks/Tutorials/Analysis
-mkdir $HOME/notebooks/Tutorials/Introduction  && \
-mv -f $HOME/notebooks/Tutorials/Analysis/JupyterDemo-Jan01.ipynb $HOME/notebooks/Tutorials/Introduction/Intro_to_JupyterLab.ipynb
+mkdir $HOME/notebooks/Tutorials/pyCAP 
+ln -s /packages/pyCAP/examples/* $HOME/notebooks/Tutorials/pyCAP/
 
-#pending tutorials repo structure change
-#mkdir $HOME/notebooks/Tutorials/Basic && cp -r /packages/tutorials/Basic $HOME/notebooks/Tutorials/Basic
-#mkdir $HOME/notebooks/Tutorials/Analysis && cp -r /packages/tutorials/Analysis $HOME/notebooks/Tutorials/Analysis
-#mkdir $HOME/notebooks/Tutorials/pyCAP && cp -r /packages/pyCAP/examples/* $HOME/notebooks/Tutorials/pyCAP
-#mkdir $HOME/notebooks/Tutorials/scdmsPyTools && cp -r /packages/scdmsPyTools/demo/* $HOME/notebooks/Tutorials/scdmsPyTools
+mkdir $HOME/notebooks/Tutorials/scdmsPyTools 
+ln -s /packages/scdmsPyTools/demo/* $HOME/notebooks/Tutorials/scdmsPyTools/
+
+mkdir $HOME/notebooks/Tutorials/Analysis
+ln -s /packages/tutorials/tutorial1_ivcurves_tc.ipynb $HOME/notebooks/Tutorials/Analysis/'Tutorial 1 - IV Curves (TC).ipynb'
+
+mkdir $HOME/notebooks/Tutorials/Introduction # && \
+ln -s /packages/tutorials/JupyterDemo-Jan01.ipynb $HOME/notebooks/Tutorials/Introduction/'Intro to JupyterLab'.ipynb
+ln -s /packages/tutorials/2019-01-06_111527.jpg $HOME/notebooks/Tutorials/Introduction/
+ln -s /packages/tutorials/AnimalDataIO.py $HOME/notebooks/Tutorials/Introduction/
+
+chmod -R 555 $HOME/notebooks/Tutorials
