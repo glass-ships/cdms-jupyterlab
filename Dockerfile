@@ -87,7 +87,7 @@ RUN source /packages/root6.12/bin/thisroot.sh && \
 		root_numpy uproot \
 		h5py tables \
 		iminuit tensorflow pydot keras \
-		zmq \
+		awkward-numba zmq \
 		dask[complete] \
 		xlrd xlwt openpyxl 
      
@@ -99,7 +99,6 @@ COPY cdms_repos/scdmsPyTools /packages/scdmsPyTools
 COPY cdms_repos/tutorials /packages/tutorials
 COPY cdms_repos/python_colorschemes /packages/python_colorschemes
 COPY cdms_repos/analysis_tools /packages/analysis_tools
-
 
 ## Install scdmsPyTools    
 WORKDIR /packages
