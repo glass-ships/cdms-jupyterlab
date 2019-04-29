@@ -132,13 +132,13 @@ RUN sudo yum install -y \
 ## Install additional Python packages
 RUN source /packages/root6.12/bin/thisroot.sh && \
 	source scl_source enable rh-python36 && \
-	pip install --upgrade pip && \
-	pip --no-cache-dir install \
+	pip3 install --upgrade pip && \
+	pip3 --no-cache-dir install \
 		jupyter jupyterlab metakernel \
 		root_numpy uproot \
 		h5py tables \
 		iminuit tensorflow pydot keras \
-		zmq \
+		awkward-numba zmq \
 		dask[complete] \
 		xlrd xlwt openpyxl 
      
