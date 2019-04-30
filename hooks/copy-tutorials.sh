@@ -16,8 +16,9 @@ ln -s /packages/scdmsPyTools/demo/* $HOME/notebooks/Tutorials/scdmsPyTools/
 
 mkdir $HOME/notebooks/Tutorials/Analysis
 ln -s /packages/tutorials/tutorial1_ivcurves_tc.ipynb $HOME/notebooks/Tutorials/Analysis/'Tutorial 1 - IV Curves (TC).ipynb'
+ln -s /packages/tutorials/animal_circuit.png $HOME/notebooks/Tutorials/Analysis/animal_circuit.png
 
-mkdir $HOME/notebooks/Tutorials/Introduction # && \
+mkdir $HOME/notebooks/Tutorials/Introduction 
 ln -s /packages/tutorials/JupyterDemo-Jan01.ipynb $HOME/notebooks/Tutorials/Introduction/'Intro to JupyterLab'.ipynb
 ln -s /packages/tutorials/2019-01-06_111527.jpg $HOME/notebooks/Tutorials/Introduction/
 ln -s /packages/tutorials/AnimalDataIO.py $HOME/notebooks/Tutorials/Introduction/

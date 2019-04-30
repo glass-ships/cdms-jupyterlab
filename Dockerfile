@@ -3,60 +3,8 @@
 ####     See ./README.md for details                                        ####
 ################################################################################
 
-#### intermediate image
-
-FROM centos:7 as intermediate
-USER root
-
-## install git
-RUN yum -y upgrade
-RUN yum -y install sudo
-RUN sudo yum install -y git
-
-## supply credentials
-ARG SSHKEYPUB
-ARG SSHKEYPVT
-ARG SSHHOSTS
-ARG SSHCONFIG
-
-RUN mkdir /root/.ssh && \
-	echo "$SSHKEYPUB" > /root/.ssh/id_rsa.pub && \
-	echo "$SSHKEYPVT" > /root/.ssh/id_rsa && \
-	echo "$SSHHOSTS" > /root/.ssh/known_hosts && \
-	echo "$SSHCONFIG" > /root/.ssh/config
-
-RUN sudo chmod 600 /root/.ssh/config && \
-	sudo chmod 600 /root/.ssh/id_rsa && \
-	sudo chmod 644 /root/.ssh/known_hosts
-
-## clone cdms repos
-WORKDIR /packages
-#RUN git clone --recursive josh@nero:/data/git/Analysis/scdmsPyTools.git && \
-RUN git clone josh@nero:/data/git/Analysis/scdmsPyTools.git && \
-	cd scdmsPyTools/scdmsPyTools/BatTools && \
-	rm -rf BatCommon && \
-	git clone josh@nero:/data/git/Reconstruction/BatCommon.git && \
-	cd BatCommon && \
-	rm -rf IOLibrary && \
-	git clone josh@nero:/data/git/DAQ/IOLibrary && \
-	cd ../../.. && \
-	git checkout master && \
-	git submodule update --init --recursive 
-RUN cd /packages && \ 
-	git clone josh@nero:/data/git/Analysis/pyCAP.git && \
-	git clone josh@nero:/data/git/Analysis/tutorials.git && \
-	git clone josh@nero:/data/git/Analysis/python_colorschemes.git && \ 
-	git clone josh@nero:/data/git/TF_Analysis/Northwestern/analysis_tools.git
-
-##################################################################################
-
-#### final image
-
 FROM slaclab/slac-jupyterlab-gpu:20190106.0 
 USER root
-
-### pull repos from intermediate build
-COPY --from=intermediate /packages/ /packages/
 
 ### ROOT and Boost ###
 
@@ -112,7 +60,8 @@ RUN rm -r ~/rootsource.tar.gz ~/root-6.12.06
 RUN ln -s /packages/boost1.67/lib/libboost_numpy36.so /packages/boost1.67/lib/libboost_numpy.so && \
 	ln -s /packages/boost1.67/lib/libboost_python36.so /packages/boost1.67/lib/libboost_python.so
 
-### ###
+### Extra packages and CDMS dependencies ###
+
 ## Install additional system packages
 RUN sudo yum install -y \
 	centos-release-scl git patch net-tools binutils \
@@ -132,8 +81,8 @@ RUN sudo yum install -y \
 ## Install additional Python packages
 RUN source /packages/root6.12/bin/thisroot.sh && \
 	source scl_source enable rh-python36 && \
-	pip3 install --upgrade pip && \
-	pip3 --no-cache-dir install \
+	pip install --upgrade pip && \
+	pip --no-cache-dir install \
 		jupyter jupyterlab metakernel \
 		root_numpy uproot \
 		h5py tables \
@@ -143,12 +92,21 @@ RUN source /packages/root6.12/bin/thisroot.sh && \
 		xlrd xlwt openpyxl 
      
 ### CDMS packages ###
-WORKDIR /packages/scdmsPyTools
+
+## Import CDMS packages
+COPY cdms_repos/pyCAP /packages/pyCAP
+COPY cdms_repos/scdmsPyTools /packages/scdmsPyTools
+COPY cdms_repos/tutorials /packages/tutorials
+COPY cdms_repos/python_colorschemes /packages/python_colorschemes
+COPY cdms_repos/analysis_tools /packages/analysis_tools
+
+## Install scdmsPyTools    
+WORKDIR /packages
 RUN export BOOST_PATH=/packages/boost1.67 && \
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/packages/boost1.67/lib && \
 	source /packages/root6.12/bin/thisroot.sh && \
 	source scl_source enable rh-python36 && \
-	cd scdmsPyTools/BatTools && \
+	cd scdmsPyTools/scdmsPyTools/BatTools && \
 	make && \
 	cd ../.. && \
 	python setup.py install
@@ -166,6 +124,7 @@ RUN source scl_source enable rh-python36 && \
 	python setup.py install
 
 ### Finalize environment ###
+
 ## Copy hook to create/manage tutorials directory in user's home
 COPY hooks/copy-tutorials.sh /opt/slac/jupyterlab/post-hook.sh
 
