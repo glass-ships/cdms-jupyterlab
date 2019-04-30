@@ -17,7 +17,7 @@ if [ ! -e "$DIR/cdms_repos" ]; then
 	git clone josh@nero:/data/git/Reconstruction/BatCommon.git
 	cd BatCommon
 	rm -rf IOLibrary
-	git clone josh@nero:/data/git/DAQ/IOLibrary
+	git clone josh@nero:/data/git/DAQ/IOLibrary.git
 	cd ../../..
 	git checkout master
 	git submodule update --init --recursive 
