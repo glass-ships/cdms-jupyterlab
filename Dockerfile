@@ -81,10 +81,10 @@ RUN sudo yum install -y \
 ## Install additional Python packages
 RUN source /packages/root6.12/bin/thisroot.sh && \
 	source scl_source enable rh-python36 && \
-	pip install --upgrade pip && \
-	pip --no-cache-dir install \
+	pip3 install --upgrade pip setuptools && \
+	pip3 --no-cache-dir install \
 		jupyter jupyterlab metakernel \
-		root_numpy uproot \
+		root_numpy root_pandas uproot \
 		h5py tables \
 		iminuit tensorflow pydot keras \
 		awkward-numba zmq \
@@ -122,6 +122,16 @@ RUN source scl_source enable rh-python36 && \
 WORKDIR /packages/python_colorschemes
 RUN source scl_source enable rh-python36 && \
 	python setup.py install
+
+## TWaveform test - for TUNL
+
+COPY cdms_repos/TWaveform-casa /packages/TWaveform-casa
+WORKDIR /packages/TWaveform-casa
+RUN source /packages/root6.12/bin/thisroot.sh && \
+    chmod +x ./configure && \
+    ./configure CXXFLAGS="$(root-config --cflags)" && \
+    make -j4
+
 
 ### Finalize environment ###
 
