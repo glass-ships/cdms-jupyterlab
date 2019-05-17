@@ -86,10 +86,21 @@ RUN source /packages/root6.12/bin/thisroot.sh && \
 		jupyter jupyterlab metakernel \
 		root_numpy root_pandas uproot \
 		h5py tables \
-		iminuit tensorflow pydot keras \
+		iminuit tensorflow==1.12.0 pydot keras \
 		awkward-numba zmq \
 		dask[complete] \
 		xlrd xlwt openpyxl 
+
+### Create duplicate python virtualenv for code development ###
+WORKDIR /packages
+
+RUN source scl_source enable rh-python36 && \
+#	virtualenv-clone 
+#	pip3 freeze > requirements.txt && \
+	virtualenv --system-site-packages dev && \ 
+	source dev/bin/activate 
+#	pip3 install -r requirements.txt && \
+#	rm requirements.txt
      
 ### CDMS packages ###
 
