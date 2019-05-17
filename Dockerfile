@@ -94,13 +94,13 @@ RUN source /packages/root6.12/bin/thisroot.sh && \
 ### CDMS packages ###
 
 ## Import CDMS packages
+COPY cdms_repos/python_colorschemes /packages/python_colorschemes
+COPY cdms_repos/tutorials /packages/tutorials
+COPY cdms_repos/analysis_tools /packages/analysis_tools
 COPY cdms_repos/pyCAP /packages/pyCAP
 COPY cdms_repos/scdmsPyTools /packages/scdmsPyTools
-COPY cdms_repos/tutorials /packages/tutorials
-COPY cdms_repos/python_colorschemes /packages/python_colorschemes
-COPY cdms_repos/analysis_tools /packages/analysis_tools
+COPY cdms_repos/scdmsPyTools_TF /packages/scdmsPyTools_TF
 
-## Install scdmsPyTools    
 WORKDIR /packages
 RUN export BOOST_PATH=/packages/boost1.67 && \
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/packages/boost1.67/lib && \
@@ -122,16 +122,6 @@ RUN source scl_source enable rh-python36 && \
 WORKDIR /packages/python_colorschemes
 RUN source scl_source enable rh-python36 && \
 	python setup.py install
-
-## TWaveform test - for TUNL
-
-COPY cdms_repos/TWaveform-casa /packages/TWaveform-casa
-WORKDIR /packages/TWaveform-casa
-RUN source /packages/root6.12/bin/thisroot.sh && \
-    chmod +x ./configure && \
-    ./configure CXXFLAGS="$(root-config --cflags)" && \
-    make -j4
-
 
 ### Finalize environment ###
 

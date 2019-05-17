@@ -14,7 +14,7 @@ if [ ! -e "$DIR/cdms_repos" ]; then
 	git clone josh@nero:/data/git/Analysis/tutorials.git
 	git clone josh@nero:/data/git/Analysis/python_colorschemes.git
 	git clone josh@nero:/data/git/TF_Analysis/Northwestern/analysis_tools.git
-	git clone josh@nero:/data/git/Analysis/TWaveform-casa.git
+	git clone josh@nero:/data/git/Analysis/scdmsPyTools_TF.git
 
 elif [ -d "$DIR/cdms_repos" ]; then
 	
@@ -23,6 +23,7 @@ elif [ -d "$DIR/cdms_repos" ]; then
 	cd ../tutorials && git pull
 	cd ../python_colorschemes && git pull
 	cd ../analysis_tools && git pull
+	cd ../scdmsPyTools_TF && git pull
 fi
 
 ## Build Docker image
@@ -30,4 +31,5 @@ fi
 cd $DIR
 docker build \
     --rm \
+    -t detlab/cdms-jupyterlab:0.1.5 \
     -f Dockerfile .
