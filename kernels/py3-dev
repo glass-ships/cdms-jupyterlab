@@ -1,0 +1,9 @@
+{
+"display_name": "py3-Dev",
+ "language": "python",
+ "argv": [
+    "/opt/slac/jupyterlab/launch-dev.bash",
+     "3",
+    "{connection_file}"
+ ]
+}

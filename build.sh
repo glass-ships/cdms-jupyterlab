@@ -31,5 +31,5 @@ fi
 cd $DIR
 docker build \
     --rm \
-    -t detlab/cdms-jupyterlab:0.1.6 \
+    -t detlab/cdms-jupyterlab:dev \
     -f Dockerfile .

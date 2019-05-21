@@ -139,11 +139,15 @@ RUN source scl_source enable rh-python36 && \
 ## Copy hook to create/manage tutorials directory in user's home
 COPY hooks/copy-tutorials.sh /opt/slac/jupyterlab/post-hook.sh
 
-## Copy update launch.bash to source ROOT in jupyter python notebooks 
-COPY hooks/launch.bash-with-root /opt/slac/jupyterlab/launch.bash
+## Create ROOT-enabled and code-developing notebook options 
+#COPY hooks/launch.root /opt/slac/jupyterlab/launch.bash
+COPY hooks/launch.root /opt/slac/jupyterlab/launch-root.bash
+COPY hooks/launch.dev /opt/slac/jupyterlab/launch-dev.bash
 
-## Rename SLAC_Stack jupyter kernel
-COPY kernels/rename-slac-stack /usr/local/share/jupyter/kernels/slac_stack/kernel.json 
+#COPY kernels/py3-ROOT /usr/local/share/jupyter/kernels/slac_stack/kernel.json
+COPY kernels/py3-ROOT /usr/local/share/jupyter/kernels/py3-ROOT/kernel.json
+COPY kernels/py3-dev /usr/local/share/jupyter/kernels/py3-dev/kernel.json 
+RUN rm -rf /usr/local/share/jupyter/kernels/slac_stack
 
 ## allow arrow key navigation in terminal vim
 RUN echo 'set term=builtin_ansi' >> /etc/vimrc
