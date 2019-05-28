@@ -97,8 +97,7 @@ WORKDIR /packages
 RUN source scl_source enable rh-python36 && \
 #	virtualenv-clone 
 #	pip3 freeze > requirements.txt && \
-	virtualenv --system-site-packages dev && \ 
-	source dev/bin/activate 
+	virtualenv --system-site-packages main
 #	pip3 install -r requirements.txt && \
 #	rm requirements.txt
      
@@ -111,9 +110,11 @@ COPY cdms_repos/analysis_tools /packages/analysis_tools
 COPY cdms_repos/pyCAP /packages/pyCAP
 COPY cdms_repos/scdmsPyTools /packages/scdmsPyTools
 COPY cdms_repos/scdmsPyTools_TF /packages/scdmsPyTools_TF
+COPY cdms_repos/bash_env /packages/bash_env
 
 WORKDIR /packages
-RUN export BOOST_PATH=/packages/boost1.67 && \
+RUN source /packages/main/bin/activate && \
+	export BOOST_PATH=/packages/boost1.67 && \
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/packages/boost1.67/lib && \
 	source /packages/root6.12/bin/thisroot.sh && \
 	source scl_source enable rh-python36 && \
@@ -136,8 +137,8 @@ RUN source scl_source enable rh-python36 && \
 
 ### Finalize environment ###
 
-## Copy hook to create/manage tutorials directory in user's home
-COPY hooks/copy-tutorials.sh /opt/slac/jupyterlab/post-hook.sh
+## Copy hook to copy tutorials and customize bash env
+COPY hooks/post-hook.sh /opt/slac/jupyterlab/post-hook.sh
 
 ## Create ROOT-enabled and code-developing notebook options 
 #COPY hooks/launch.root /opt/slac/jupyterlab/launch.bash
@@ -145,9 +146,10 @@ COPY hooks/launch.root /opt/slac/jupyterlab/launch-root.bash
 COPY hooks/launch.dev /opt/slac/jupyterlab/launch-dev.bash
 
 #COPY kernels/py3-ROOT /usr/local/share/jupyter/kernels/slac_stack/kernel.json
-COPY kernels/py3-ROOT /usr/local/share/jupyter/kernels/py3-ROOT/kernel.json
+COPY kernels/py3-ROOT /opt/rh/rh-python36/root/usr/share/jupyter/kernels/python3/kernel.json
 COPY kernels/py3-dev /usr/local/share/jupyter/kernels/py3-dev/kernel.json 
 RUN rm -rf /usr/local/share/jupyter/kernels/slac_stack
 
 ## allow arrow key navigation in terminal vim
-RUN echo 'set term=builtin_ansi' >> /etc/vimrc
+#RUN echo 'set term=builtin_ansi' >> /etc/vimrc
+COPY vimsettings /packages/dev/vimrc

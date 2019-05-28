@@ -1,5 +1,4 @@
 ## Create or clear Tutorials dir, copy examples and tutorials
-
 if [ ! -d "$HOME/notebooks/Tutorials" ]; then
   mkdir -p $HOME/notebooks/Tutorials
 elif [ -d "$HOME/notebooks/Tutorials" ]; then
@@ -24,3 +23,7 @@ ln -s /packages/tutorials/2019-01-06_111527.jpg $HOME/notebooks/Tutorials/Introd
 ln -s /packages/tutorials/AnimalDataIO.py $HOME/notebooks/Tutorials/Introduction/
 
 chmod -R 555 $HOME/notebooks/Tutorials
+
+## Customize bash env
+ln -s /packages/bash_env $HOME/bash_env
+bash $HOME/bash_env/init.sh

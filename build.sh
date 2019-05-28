@@ -4,7 +4,6 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 echo Script directory: $DIR
 
 ## Clone CDMS repositories locally
-
 if [ ! -e "$DIR/cdms_repos" ]; then
 	mkdir  -p "$DIR/cdms_repos"
 	cd $DIR/cdms_repos
@@ -15,6 +14,7 @@ if [ ! -e "$DIR/cdms_repos" ]; then
 	git clone josh@nero:/data/git/Analysis/python_colorschemes.git
 	git clone josh@nero:/data/git/TF_Analysis/Northwestern/analysis_tools.git
 	git clone josh@nero:/data/git/Analysis/scdmsPyTools_TF.git
+	git clone --branch cdms https://github.com/glass-ships/bash_env.git
 
 elif [ -d "$DIR/cdms_repos" ]; then
 	
@@ -24,12 +24,14 @@ elif [ -d "$DIR/cdms_repos" ]; then
 	cd ../python_colorschemes && git pull
 	cd ../analysis_tools && git pull
 	cd ../scdmsPyTools_TF && git pull
+	cd ../bash_env && git pull
 fi
 
 ## Build Docker image
-
 cd $DIR
 docker build \
     --rm \
-    -t detlab/cdms-jupyterlab:dev \
+    -t detlab/cdms-jupyterlab:0.1.6 \
     -f Dockerfile .
+
+docker push detlab/cdms-jupyterlab:0.1.6

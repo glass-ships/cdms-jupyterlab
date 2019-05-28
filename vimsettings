@@ -1,0 +1,8 @@
+nnoremap <Left> h                
+nnoremap <Right> l                                                              
+nnoremap <Up> k                                                                 
+nnoremap <Down> j                                                               
+inoremap <up> k                                                                 
+inoremap <down> j                                                               
+inoremap <left> h                                                               
+inoremap <right> l
