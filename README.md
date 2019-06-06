@@ -3,16 +3,15 @@
 ## Overview
 
 SLAC maintains a number of JupyterLab images for various research projects.
-This repository contains the code used to build the SuperCDMS Docker beta image, intended for testing new features.
-For Release Notes, see the master branch README. 
+This repository contains the code used to build an image for dark matter analysis by the SuperCDMS experiment.
 
 **Dependencies:** 
 - Docker CE Edge ([installation guide](https://docs.docker.com/install/linux/docker-ce/ubuntu/))
 
 **Notes:**  
 - Docker requires sudo acces, or that the user be added to the `Docker` group 
-- ssh access to CDMS git repositories
-    - ssh keys are securely managed by the ARG function, and do not linger in the final build
+- SSH access to CDMS git repositories
+- All cloning is done locally - SSH keys remain secure. 
 
 ## Usage
 
@@ -20,12 +19,12 @@ Documentation on the official SuperCDMS JupyterLab image is available to SLAC us
 
 If you're interested in building your own Docker image for local use: 
 
-- You'll need to change every instance of `josh@nero` in `./Dockerfile` to reflect your SLAC username
+- You'll need to change every instance of `josh@nero` in `./build.sh` to reflect your SLAC username
 - JupyterLab is installed via pip, so you'll want to add a `RUN` statement at the end of `./Dockerfile` that launches JupyterLab when the container starts up
-- `./build.sh` provides an example script that you'll likely want to tailor to fit your needs.
-- the build script requires a tag argument, and can be run with the following syntax:  
-    ``../cdms-jupyterlab $ bash build.sh '<dockerhub user>/<repository>:<tag>'``
+	- You may need to provide some environment variables for JupyterLab to run properly. Check any error output for clues about where to start. 
+		- (I'll update this documentation with more useful information as I learn more about these variables)
+- `./build.sh` provides an example script that you'll likely want to adjust to fit your needs.
 
 ## Contribution 
 
-If you'd like to help develop the official SuperCDMS JupyterLab image, you can reach via the [repository](https://github.com/glass-ships/cdms-jupyterlab), or contact Josh Elsarboukh, joshua.elsarboukh@ucdenver.edu
+If you'd like to help develop the official SuperCDMS JupyterLab image, you can reach out through [GitHub](https://github.com/glass-ships/cdms-jupyterlab), or contact Josh Elsarboukh, joshua.elsarboukh@ucdenver.edu

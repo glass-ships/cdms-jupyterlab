@@ -3,14 +3,13 @@
 ####     See ./README.md for details                                        ####
 ################################################################################
 
-FROM slaclab/slac-jupyterlab-gpu:20190106.0 
+FROM slaclab/slac-jupyterlab:20190514.0
 USER root
 
 ### ROOT and Boost ###
-
+RUN yum -y install sudo && sudo yum -y upgrade
 # ROOT and Boost dependencies
-RUN sudo yum -y upgrade && \
-	sudo yum install -y gcc-gfortran openssl-devel pcre-devel \
+RUN sudo yum install -y gcc-gfortran openssl-devel pcre-devel \
 	mesa-libGL-devel mesa-libGLU-devel glew-devel ftgl-devel mysql-devel \
 	fftw-devel cfitsio-devel graphviz-devel gsl-static\
 	avahi-compat-libdns_sd-devel libldap-dev python-devel \
@@ -75,32 +74,28 @@ RUN sudo yum install -y \
 	# Compression tools
 	bzip2 unzip lrzip zip zlib-devel \ 
 	# Terminal utilities
-	tree ack screen tmux vim-enhanced vim-nox emacs emacs-nox \  
+	fish tree ack screen tmux vim-enhanced neovim emacs emacs-nox \  
 	&& sudo yum clean all
-	
+
+## Install Anaconda 3
+RUN wget --quiet https://repo.anaconda.com/archive/Anaconda2-5.3.0-Linux-x86_64.sh -O /packages/anaconda.sh && \
+    /bin/bash /packages/anaconda.sh -b -p /packages/anaconda3 && \
+    rm /packages/anaconda.sh 
+
 ## Install additional Python packages
 RUN source /packages/root6.12/bin/thisroot.sh && \
 	source scl_source enable rh-python36 && \
 	pip3 install --upgrade pip setuptools && \
 	pip3 --no-cache-dir install \
 		jupyter jupyterlab metakernel \
+		memory-profiler \
 		root_numpy root_pandas uproot \
 		h5py tables \
-		iminuit tensorflow==1.12.0 pydot keras \
-		awkward-numba zmq \
+		iminuit tensorflow pydot keras \
+		awkward awkward-numba zmq \
 		dask[complete] \
 		xlrd xlwt openpyxl 
 
-### Create duplicate python virtualenv for code development ###
-WORKDIR /packages
-
-RUN source scl_source enable rh-python36 && \
-#	virtualenv-clone 
-#	pip3 freeze > requirements.txt && \
-	virtualenv --system-site-packages main
-#	pip3 install -r requirements.txt && \
-#	rm requirements.txt
-     
 ### CDMS packages ###
 
 ## Import CDMS packages
@@ -113,43 +108,27 @@ COPY cdms_repos/scdmsPyTools_TF /packages/scdmsPyTools_TF
 COPY cdms_repos/bash_env /packages/bash_env
 
 WORKDIR /packages
-RUN source /packages/main/bin/activate && \
+RUN source scl_source enable rh-python36 && \
+	source /packages/root6.12/bin/thisroot.sh && \
 	export BOOST_PATH=/packages/boost1.67 && \
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/packages/boost1.67/lib && \
-	source /packages/root6.12/bin/thisroot.sh && \
-	source scl_source enable rh-python36 && \
 	cd scdmsPyTools/scdmsPyTools/BatTools && \
 	make && \
 	cd ../.. && \
-	python setup.py install
-
-WORKDIR /packages/pyCAP
-RUN source scl_source enable rh-python36 && \
-	python setup.py install
-
-WORKDIR /packages/analysis_tools
-RUN source scl_source enable rh-python36 && \ 
-	python setup.py install
-
-WORKDIR /packages/python_colorschemes
-RUN source scl_source enable rh-python36 && \
+	python setup.py install && \
+	cd /packages/pyCAP && \
+	python setup.py install && \
+	cd /packages/analysis_tools && \
+	python setup.py install && \
+	cd /packages/python_colorschemes && \
 	python setup.py install
 
 ### Finalize environment ###
 
-## Copy hook to copy tutorials and customize bash env
+## Copy hook for Tutorials and custom bash env
 COPY hooks/post-hook.sh /opt/slac/jupyterlab/post-hook.sh
 
 ## Create ROOT-enabled and code-developing notebook options 
-#COPY hooks/launch.root /opt/slac/jupyterlab/launch.bash
-COPY hooks/launch.root /opt/slac/jupyterlab/launch-root.bash
-COPY hooks/launch.dev /opt/slac/jupyterlab/launch-dev.bash
-
-#COPY kernels/py3-ROOT /usr/local/share/jupyter/kernels/slac_stack/kernel.json
+COPY hooks/launch.bash /opt/slac/jupyterlab/launch.bash
 COPY kernels/py3-ROOT /opt/rh/rh-python36/root/usr/share/jupyter/kernels/python3/kernel.json
-COPY kernels/py3-dev /usr/local/share/jupyter/kernels/py3-dev/kernel.json 
 RUN rm -rf /usr/local/share/jupyter/kernels/slac_stack
-
-## allow arrow key navigation in terminal vim
-#RUN echo 'set term=builtin_ansi' >> /etc/vimrc
-COPY vimsettings /packages/dev/vimrc
