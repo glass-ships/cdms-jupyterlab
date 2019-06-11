@@ -3,7 +3,7 @@
 ####     See ./README.md for details                                        ####
 ################################################################################
 
-FROM slaclab/slac-jupyterlab:20190514.0
+FROM slaclab/slac-jupyterlab:20190610.2
 USER root
 
 ### ROOT and Boost ###
@@ -74,13 +74,8 @@ RUN sudo yum install -y \
 	# Compression tools
 	bzip2 unzip lrzip zip zlib-devel \ 
 	# Terminal utilities
-	fish tree ack screen tmux vim-enhanced neovim emacs emacs-nox \  
+	fish tree ack screen tmux vim-enhanced neovim nano pico emacs emacs-nox \  
 	&& sudo yum clean all
-
-## Install Anaconda 3
-RUN wget --quiet https://repo.anaconda.com/archive/Anaconda2-5.3.0-Linux-x86_64.sh -O /packages/anaconda.sh && \
-    /bin/bash /packages/anaconda.sh -b -p /packages/anaconda3 && \
-    rm /packages/anaconda.sh 
 
 ## Install additional Python packages
 RUN source /packages/root6.12/bin/thisroot.sh && \
@@ -95,6 +90,22 @@ RUN source /packages/root6.12/bin/thisroot.sh && \
 		awkward awkward-numba zmq \
 		dask[complete] \
 		xlrd xlwt openpyxl 
+
+## Install Anaconda 3
+RUN wget --quiet https://repo.anaconda.com/archive/Anaconda3-2019.03-Linux-x86_64.sh -O /packages/anaconda.sh && \
+    /bin/bash /packages/anaconda.sh -b -p /packages/anaconda3 && \
+    rm /packages/anaconda.sh
+COPY scripts/rootenv.sh /packages/root6.12/bin/ 
+RUN . /packages/anaconda3/etc/profile.d/conda.sh && \
+	conda activate base && \ 
+	. /packages/root6.12/bin/rootenv.sh && \
+	conda install jupyter jupyterlab metakernel \
+	        h5py iminuit tensorflow pydot keras \
+	        dask[complete] \
+	        xlrd xlwt openpyxl && \
+	pip install --upgrade pip setuptools && \
+	pip --no-cache-dir install memory-profiler tables \
+		zmq root_pandas awkward awkward-numba uproot root_numpy
 
 ### CDMS packages ###
 
