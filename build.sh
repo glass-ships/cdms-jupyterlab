@@ -34,4 +34,4 @@ docker build \
     -t detlab/cdms-jupyterlab:0.1.6 \
     -f Dockerfile .
 
-docker push detlab/cdms-jupyterlab:0.1.6
+#docker push detlab/cdms-jupyterlab:0.1.6
