@@ -31,7 +31,7 @@ fi
 cd $DIR
 docker build \
     --rm \
-    -t detlab/cdms-jupyterlab:1.6b \
+    -t supercdms/cdms-jupyterlab:1.6 \
     -f Dockerfile .
 
-#docker push detlab/cdms-jupyterlab:1.6b
+docker push supercdms/cdms-jupyterlab:1.6

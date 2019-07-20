@@ -3,7 +3,7 @@
 ####     See ./README.md for details                                        ####
 ################################################################################
 
-FROM slaclab/slac-jupyterlab:20190610.2
+FROM slaclab/slac-jupyterlab:20190712.2
 USER root
 
 ### ROOT and Boost ###
