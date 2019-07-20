@@ -25,6 +25,44 @@ If you're interested in building your own Docker image for local use:
 		- (I'll update this documentation with more useful information as I learn more about these variables)
 - `./build.sh` provides an example script that you'll likely want to adjust to fit your needs.
 
-## Contribution 
+## Contributing
 
-If you'd like to help develop the official SuperCDMS JupyterLab image, you can reach out through [GitHub](https://github.com/glass-ships/cdms-jupyterlab), or contact Josh Elsarboukh, joshua.elsarboukh@ucdenver.edu
+If you'd like to make changes to the CDMS JupyterLab analysis environment, you should contribute to the develop branch of this repository.
+
+0. Checkout the repository and switch to develop branch:
+    - `$ git clone https://gitlab.com/supercdms/CompInfrastructure/cdms-jupyterlab`
+    - `$ cd cdms-jupyterlab`
+    - `$ git checkout develop`
+
+1. For changes to the Docker image itself:
+- Make any changes and push to develop, for example:
+    - `$ git commit -a -m 'updated a thing'`
+    - `$ git push`
+
+2. Changes to CDMS packages should be made to the master branch:
+    - pyCAP
+    - scdmsPyTools
+    - tutorials
+    - python_colorschemes
+    - etc.
+
+3. Build image and push to Docker hub:
+- Option A:
+    - let josh know to build a new image
+    - it'll be reflected shortly in the cdms jupyterlab spawner options
+
+- Option B:
+    - login to docker (ask Josh for login info?)
+        - ``` 
+          $ docker login --username=maryatdocker --email=mary@docker.com
+          Password: 
+          WARNING: login credentials saved in C:\Users\sven\.docker\config.json
+          Succeeded 
+    - build using script (leave tag in script as '1.6b' for now)
+        - `$ bash build.sh`
+    - push image to docker hub
+        - `$ docker push detlab/cdms-jupyterlab:1.6b`
+    - the new image will be reflected shortly in the cdms jupyterlab spawner options
+
+Maybe in the future:
+- automated builds / CI through gitlab?
