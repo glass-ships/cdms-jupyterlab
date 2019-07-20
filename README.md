@@ -52,16 +52,16 @@ If you'd like to make changes to the CDMS JupyterLab analysis environment, you s
     - it'll be reflected shortly in the cdms jupyterlab spawner options
 
 - Option B:
-    - login to docker (ask Josh for login info?)
+    - login to docker (ask to be added to supercdms organization on docker hub)
         - ``` 
-          $ docker login --username=maryatdocker --email=mary@docker.com
+          $ docker login --username=loki --email=loki@asgard.com
           Password: 
-          WARNING: login credentials saved in C:\Users\sven\.docker\config.json
+          WARNING: login credentials saved in /home/loki/.docker/config.json
           Succeeded 
-    - build using script (leave tag in script as '1.6b' for now)
+    - build using script (leave tag in script as '1.7b' for now)
         - `$ bash build.sh`
     - push image to docker hub
-        - `$ docker push detlab/cdms-jupyterlab:1.6b`
+        - `$ docker push detlab/cdms-jupyterlab:1.7b`
     - the new image will be reflected shortly in the cdms jupyterlab spawner options
 
 Maybe in the future:
