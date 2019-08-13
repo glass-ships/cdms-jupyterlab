@@ -7,7 +7,10 @@ FROM slaclab/slac-jupyterlab:20190712.2
 USER root
 
 ### ROOT and Boost ###
+RUN export HTTP_TMP=$HTTP_PROXY && \
+	unset HTTP_PROXY 
 RUN yum -y install sudo && sudo yum -y upgrade
+
 # ROOT and Boost dependencies
 RUN sudo yum install -y gcc-gfortran openssl-devel pcre-devel \
 	mesa-libGL-devel mesa-libGLU-devel glew-devel ftgl-devel mysql-devel \
@@ -143,3 +146,5 @@ COPY hooks/post-hook.sh /opt/slac/jupyterlab/post-hook.sh
 COPY hooks/launch.bash /opt/slac/jupyterlab/launch.bash
 COPY kernels/py3-ROOT /opt/rh/rh-python36/root/usr/share/jupyter/kernels/python3/kernel.json
 RUN rm -rf /usr/local/share/jupyter/kernels/slac_stack
+
+RUN export HTTP_PROXY=$HTTP_TMP && unset HTTP_TMP
