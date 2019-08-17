@@ -1,7 +1,7 @@
 #!/bin/bash
-
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 echo Script directory: $DIR
+#####################################################
 
 ## Clone CDMS repositories locally
 if [ ! -e "$DIR/cdms_repos" ]; then
